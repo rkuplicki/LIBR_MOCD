@@ -1,0 +1,3 @@
+Original File Name:,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\data/PB-AAXXX-Admin_RA-run_1-2014_Aug_26_1010.csv,Time:,2014_Aug_26_1010,Parameter File:,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\T1000_Physio_Baseline_Schedule1.csv,Event Codes:,[('INSTRUCT_ONSET', 1), ('TASK_ONSET', 2), ('IMAGE_ONSET', 3)]
+trial_number,trial_type,event_code,absolute_time,response_time,response,result
+NA,NA,1,1.05487415567e-05,NA,NA,NA

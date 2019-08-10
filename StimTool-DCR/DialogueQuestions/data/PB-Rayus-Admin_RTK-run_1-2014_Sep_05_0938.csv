@@ -1,0 +1,13 @@
+Original File Name:,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\data/PB-Rayus-Admin_RTK-run_1-2014_Sep_05_0938.csv,Time:,2014_Sep_05_0938,Parameter File:,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\T1000_Physio_Baseline_Schedule1.csv,Event Codes:,[('INSTRUCT_ONSET', 1), ('TASK_ONSET', 2), ('IMAGE_ONSET', 3)]
+trial_number,trial_type,event_code,absolute_time,response_time,response,result
+NA,NA,1,-0.00443093839567,NA,NA,NA
+NA,NA,2,19.8489707013,19.8534016397,NA,NA
+0,0,3,19.8698415195,NA,NA,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\media/1007174_orig.bmp
+1,0,3,22.8580822439,NA,NA,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\media/1920x1200.bmp
+2,0,3,25.863234304,NA,NA,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\media/20050613-019-poppy.bmp
+3,0,3,28.8681517259,NA,NA,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\media/2010-poinsettias58.bmp
+4,0,3,31.8564500407,NA,NA,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\media/2061950.bmp
+5,0,3,34.8614569844,NA,NA,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\media/31237-flowers-close-up.bmp
+6,0,3,37.8663889464,NA,NA,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\media/3673762322_203cb0eb03_o.bmp
+7,0,3,40.8546664489,NA,NA,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\media/46631679.bmp
+8,0,3,43.8597230002,NA,NA,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\media/4977034-colourful-summer-flowers-close-up.bmp

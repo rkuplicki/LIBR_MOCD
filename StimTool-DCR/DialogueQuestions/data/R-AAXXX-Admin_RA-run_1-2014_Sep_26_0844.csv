@@ -1,0 +1,3 @@
+Original File Name:,T:\BehavioralTasks\StimTool\Rest\data/R-AAXXX-Admin_RA-run_1-2014_Sep_26_0844.csv,Time:,2014_Sep_26_0844,Parameter File:,T:\BehavioralTasks\StimTool\Rest\T1000_Rest_Schedule1.csv,Event Codes:,[('INSTRUCT_ONSET', 1), ('TASK_ONSET', 2), ('TASK_END', 99)]
+trial_number,trial_type,event_code,absolute_time,response_time,response,result
+NA,NA,1,-0.00499743409455,NA,NA,NA

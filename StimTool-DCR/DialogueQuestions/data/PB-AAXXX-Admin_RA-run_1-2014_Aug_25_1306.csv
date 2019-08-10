@@ -1,0 +1,26 @@
+Original File Name:,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\data/PB-AAXXX-Admin_RA-run_1-2014_Aug_25_1306.csv,Time:,2014_Aug_25_1306,Parameter File:,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\T1000_Physio_Baseline_Schedule1.csv,Event Codes:,[('INSTRUCT_ONSET', 1), ('TASK_ONSET', 2), ('IMAGE_ONSET', 3)]
+trial_number,trial_type,event_code,absolute_time,response_time,response,result
+NA,NA,1,2.7654808946e-05,NA,NA,NA
+NA,NA,2,15.0953582993,15.0953306445,NA,NA
+0,0,3,15.1173381603,NA,NA,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\media/1007174_orig.bmp
+1,0,3,18.1052564355,NA,NA,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\media/1920x1200.bmp
+2,0,3,21.110265945,NA,NA,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\media/20050613-019-poppy.bmp
+3,0,3,24.1152554975,NA,NA,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\media/2010-poinsettias58.bmp
+4,0,3,27.1039672088,NA,NA,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\media/2061950.bmp
+5,0,3,30.1089413658,NA,NA,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\media/31237-flowers-close-up.bmp
+6,0,3,33.1139343395,NA,NA,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\media/3673762322_203cb0eb03_o.bmp
+7,0,3,36.1188879693,NA,NA,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\media/46631679.bmp
+8,0,3,39.1072116581,NA,NA,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\media/4977034-colourful-summer-flowers-close-up.bmp
+9,0,3,42.1122069126,NA,NA,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\media/5720_1280x800.bmp
+10,0,3,45.1171699507,NA,NA,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\media/7119_1280x800.bmp
+11,0,3,48.1054534403,NA,NA,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\media/7602895248_460392e700_h.bmp
+12,0,3,51.1101194032,NA,NA,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\media/a-rose-of-unique-color-flowers-2791564-1534-1152.bmp
+13,0,3,54.1154952674,NA,NA,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\media/beautiful-blooming-unique-flower-wallpaper.bmp
+14,0,3,57.1037545235,NA,NA,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\media/bigpreview_PurpleFlowersOfCrocus.bmp
+15,0,3,60.1420461527,NA,NA,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\media/Bird_of_Paradise_flower.bmp
+16,0,3,63.1137732575,NA,NA,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\media/birds-paradise-flower-3.bmp
+17,0,3,66.1188332299,NA,NA,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\media/Blue-Lace-Flowers.bmp
+18,0,3,69.1070702481,NA,NA,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\media/Blue_Hydrangea_Flower_Close-up_Photography.bmp
+19,0,3,72.112044405,NA,NA,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\media/BlueFlowersCloseUpWallpapers8.bmp
+20,0,3,75.1170293959,NA,NA,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\media/CaliforniaPoppy.bmp
+21,0,3,78.1049693388,NA,NA,\\isilon1\homefolders\rkuplicki\Documents\StimTool\Baseline\media/Calla_lily.bmp

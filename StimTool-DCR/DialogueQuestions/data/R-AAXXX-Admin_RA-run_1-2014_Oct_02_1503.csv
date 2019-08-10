@@ -1,0 +1,6 @@
+Original File Name:,T:\BehavioralTasks\StimTool\DialogueQuestions\data/R-AAXXX-Admin_RA-run_1-2014_Oct_02_1503.csv,Time:,2014_Oct_02_1503,Parameter File:,ImpedanceChecks.QL,Event Codes:,[('RESPONSE', 1), ('TASK_END', 99)]
+trial_number,trial_type,event_code,absolute_time,response_time,response,result
+0,NA,1,3.86085444439,3.83473218366,4,What is the impedance (KOhms) between the eye-blink electrodes? (should be <10)
+1,NA,1,10.1443057753,6.27835490362,3,What is the impedance (KOhms) between the medial eye blink electrode and the stomach EKG electrode? (should be <10)
+2,NA,1,10.7900107677,0.640544772556,3,What is the impedance (KOhms) between the lateral eye blink electrode and the clavical EKG electrode? (should be <10)
+NA,NA,99,10.795297839,NA,NA,NA

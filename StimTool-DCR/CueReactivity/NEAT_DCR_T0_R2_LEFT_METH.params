@@ -1,0 +1,12 @@
+run_id _MCR-RP-_BEH
+question_image 'media\MethOpioidDatabase\urge_question_drugs.PNG'
+response_image_1 'media\MethOpioidDatabase\urge_response_drugs_1.PNG'
+response_image_2 'media\MethOpioidDatabase\urge_response_drugs_2.PNG'
+response_image_3 'media\MethOpioidDatabase\urge_response_drugs_3.PNG'
+response_image_4 'media\MethOpioidDatabase\urge_response_drugs_4.PNG'
+select_1 'right'
+select_2 'left'
+select_3 'up'
+select_4 'down'
+instruction_schedule DCR_instruct_scheduleS_L-NeuroCAPS-METH.csv
+practice False
