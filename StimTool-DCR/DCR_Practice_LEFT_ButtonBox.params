@@ -1,0 +1,12 @@
+signal_parallel False
+auto_advance True
+screen_x 1920
+screen_y 1070
+output_dir 'C:/DCR_Temporary_Storage/'
+left '3'
+right '4'
+up '2'
+down '1'
+instruction_volume 0.4
+redirect_output True
+session_id T1
