@@ -1,2 +1,0 @@
-Original File Name:,T:\BehavioralTasks\StimTool\DialogueQuestions\data/R-AAXXX-Admin_RA-run_1-2014_Sep_29_1137.csv,Time:,2014_Sep_29_1137,Parameter File:,ImpedanceChecks.QL,Event Codes:,[('INSTRUCT_ONSET', 1), ('TASK_ONSET', 2), ('TASK_END', 99)]
-trial_number,trial_type,event_code,absolute_time,response_time,response,result

@@ -2,18 +2,17 @@ from psychopy import prefs
 prefs.general['audioLib'] = [u'pyo', u'pygame']
 from pygame import pypm #need to load this before loading psychopy.sound when using pyo 
 from psychopy import core, visual, gui, data, misc, event, sound, logging#, microphone
-import time, numpy, random, datetime, sys, os, copy, csv, ast, StimToolLib, threading, pygame.pypm, CloseAudio
+import time, numpy, random, datetime, sys, os, copy, csv, ast, StimToolLib, threading, pygame.pypm
 
 
 
 import Rest.Rest
-import DialogueQuestions.DialogueQuestions
 import DataMover.DataMover
 import CueReactivity.CueReactivity
 
 mod_mapping = {
     'Rest':Rest.Rest,
-    'Dialogue Questions':DialogueQuestions.DialogueQuestions, 'Data Mover':DataMover.DataMover, 
+    'Data Mover':DataMover.DataMover, 
     'Cue Reactivity':CueReactivity.CueReactivity}
 
 def run_task_until_success(task, session_params):

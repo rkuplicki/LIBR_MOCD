@@ -21,5 +21,11 @@ This will open a prompt, where you can select a TaskList (.TL) file.
 A TaskList contains a list of tasks to run in order.
 
 
+Things to configure:
+screen size
+response buttons
+temporary storage location
+permanent storage location
+instruction volume
 
 

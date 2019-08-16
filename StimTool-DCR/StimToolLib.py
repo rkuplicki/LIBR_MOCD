@@ -1,9 +1,8 @@
 
 
 from psychopy import event, core, visual, gui, sound, monitors, data#, microphone
-import csv, os, ctypes, ast, numpy, VMeter, pyo, sys, logging
+import csv, os, ctypes, ast, numpy, pyo, sys, logging
 from shutil import move
-import CameraDriver.CameraDriver as CD
 
 PARALLEL_DELAY = 0.005 #time to wait when sending pulses to the parallel port
 TRIAL_START_DELAY = 0.005 #test this experimentally--should be the delay between when the run is signalled to BIOPAC and when the clock is reset
@@ -36,7 +35,6 @@ HANDGRIP_ENDURANCE_CODE = 26
 GONOGOAFFECTIVE_CODE = 27
 GONOGOBUTTONS_CODE = 28
 TASK_END = 99
-parallel_writer = ctypes.windll.LoadLibrary('inpout32.dll')
 
 class GlobalVars:
     #This class will contain all module specific global variables
@@ -747,54 +745,7 @@ def close_output():
     sys.stdout.close()
     sys.stderr.close()
         
-def contains_start_touch(vMeter_input):
-    #check to see if the events contain a start touch (127 sent over channel 17)
-    for i in vMeter_input:
-        if i[0][1] == 17 and i[0][2] == 127:
-            return True
-    return False
-def contains_end_touch(vMeter_input):
-    #check to see if the events contain a start touch (127 sent over channel 17)
-    for i in vMeter_input:
-        if i[0][1] == 17 and i[0][2] == 0:
-            return True
-    return False
-
-def wait_for_tap(vm):
-    #this function will only work if config 120 is set (making 127 be sent on touch, 0 on release)
-    vm.clear() #clear lights and events
-    vm.read_multiple_events() 
-    while True:
-        if event.getKeys(["escape"]):
-            raise QuitException()
-        vMeter_input = vm.read_multiple_events()
-        if not vMeter_input:
-            continue
-        has_start = contains_start_touch(vMeter_input)  
-        has_end = contains_end_touch(vMeter_input)
-        if has_start and has_end:
-            error_popup('vMeter output returned both start and end at the same time! THIS SHOULD NOT HAPPEN')
-        if has_start:
-            return #Only start on the beginning of a touch--not a release
   
-def open_and_close_vmeter():
-    #this is an attempt to hack a workaround for some problems with the pygame.pypm library that's used to communicate with the vMeter...
-    #specifically.....
-    VMeter.print_devices()
-    try:
-        vMeter = VMeter.VMeter()
-        vMeter.close()
-    except:
-        print 'could not open/close vMeter'
-def try_to_open_vMeter():
-    #this is an attempt to hack a workaround for some problems with the pygame.pypm library that's used to communicate with the vMeter...
-    #specifically.....
-    VMeter.print_devices()
-    try:
-        v = VMeter.VMeter()
-        return v
-    except:
-        return None
 def get_exam_number(session_params):
     g = GlobalVars()
     g.session_params = session_params
