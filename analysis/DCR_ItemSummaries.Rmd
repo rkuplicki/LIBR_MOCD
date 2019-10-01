@@ -1,0 +1,1432 @@
+---
+title: "Meth/Opioid Image Summary and Analysis"
+author: "Rayus Kuplicki, Laureate Institute for Brain Research"
+date: "July 3, 2019"
+output: 
+  html_document:
+    code_folding: hide
+    highlight: tango
+    theme: cerulean
+word_document: default
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r set-options, echo=FALSE, cache=FALSE}
+options(width = 100)
+```
+
+## Input
+Read in individual subject rating data.  
+Columns are:  
+id (subject ID, possibly recode for public release)  
+Age (in years)  
+Sex (Male or Female)  
+InjectionUser (TRUE for participants who report a history of injectin methamphetamine, opioids, or both)  
+  
+ImageSet: control, opioid, or meth  
+File: file name  
+Category: subcategory within ImageSet. Possible categories are:  
+
+  + control_objects  
+  + control_objects_hand  
+  + control_tool  
+  + control_tool_hand_simple  
+  + control_tool_hand_complex  
+  + control_tool_face  
+  + meth  
+  + meth_hand  
+  + meth_instrument  
+  + meth_instrument_hand  
+  + meth_injection_instrument  
+  + meth_injection_hand  
+  + meth_face_activities  
+  + opioid  
+  + opioid_hand  
+  + opioid_instrument_hand  
+  + opioid_injection_instrument  
+  + opioid_injection_hand  
+  + opioid_face_activities  
+
+ImageSetFile:  
+
+  + Unique identifier for an image made by concatenating ImageSet and File.  
+
+Order: the order the images were seen for this subject, from 0 to 359, spans across two visits.  
+Visit: V1 or V2 for the two visits  
+time: the order the images were seen for an individual visit, from 0 to 179  
+RatingType (which question this response is for: valence, arousal, craving, related, typicality)  
+Questions were worded:  
+  
+Value: the value for this rating  
+
+```{r}
+
+#rating_data <- read.csv('OpioidMethRatingSubjectData.csv')
+#clinical_data <- read.csv('DCR_ClinicalData.csv')
+rating_data <- read.csv('DCR_RatingSubjectData-anonymized.csv')
+clinical_data <- read.csv('DCR_Clinical-anonymized.csv')
+subject_data <- merge(rating_data, clinical_data)
+
+
+
+```
+##Individual  Subject Plots
+
+```{r}
+
+library(ggplot2)
+library(gridExtra)
+library(grid)
+library(ggpubr)
+#put levels in the order we like
+subject_data$RelatedCategory <- factor(subject_data$RelatedCategory, levels = c('Neither', 'Meth', 'Opioid', 'Both'))
+
+#subject_data$Category[subject_data$Category == 'meth_injection_instrument'] <- 'meth_instrument'
+
+
+
+for (subject in unique(subject_data$id)){
+  data_to_plot <- subject_data[subject_data$id == subject,]
+  
+  
+  p1 <- ggplot(data = data_to_plot[data_to_plot$RatingType == 'valence',]) + 
+    geom_point(aes(x = Order, y = Value, color = ImageSet)) + ggtitle('Valence') +
+    xlab('') + ylab('') + theme(plot.title = element_text(hjust = 0.5)) +
+    scale_x_continuous(breaks = c(0, 90, 180, 270, 360), limits = c(0, 360)) + 
+    scale_y_continuous(breaks = c(1, 3, 5, 7, 9), limits = c(1, 9)) +
+    theme(axis.text = element_text(size = 18), plot.title = element_text(size = 24), legend.text=element_text(size=14))
+  p2 <- ggplot(data = data_to_plot[data_to_plot$RatingType == 'arousal',]) + 
+    geom_point(aes(x = Order, y = Value, color = ImageSet)) + ggtitle('Arousal') +
+    xlab('') + ylab('') + theme(plot.title = element_text(hjust = 0.5)) +
+    scale_x_continuous(breaks = c(0, 90, 180, 270, 360), limits = c(0, 360)) + 
+    scale_y_continuous(breaks = c(1, 3, 5, 7, 9), limits = c(1, 9)) +
+    theme(axis.text = element_text(size = 18), plot.title = element_text(size = 24), legend.text=element_text(size=14))
+  p3 <- ggplot(data = data_to_plot[data_to_plot$RatingType == 'craving',]) + 
+    geom_point(aes(x = Order, y = Value, color = ImageSet)) + ggtitle('Craving') +
+    xlab('') + ylab('') + theme(plot.title = element_text(hjust = 0.5)) +
+    scale_x_continuous(breaks = c(0, 90, 180, 270, 360), limits = c(0, 360)) + 
+    scale_y_continuous(breaks = c(0, 25, 50, 75, 100), limits = c(0, 100)) +
+    theme(axis.text = element_text(size = 18), plot.title = element_text(size = 24), legend.text=element_text(size=14))
+  p4 <- ggplot(data = data_to_plot[data_to_plot$RatingType == 'typicality',]) + 
+    geom_point(aes(x = Order, y = Value, color = ImageSet)) + ggtitle('Typicality') +
+    xlab('') + ylab('') + theme(plot.title = element_text(hjust = 0.5)) +
+    scale_x_continuous(breaks = c(0, 90, 180, 270, 360), limits = c(0, 360)) + 
+    scale_y_continuous(breaks = c(0, 25, 50, 75, 100), limits = c(0, 100)) +
+    theme(axis.text = element_text(size = 18), plot.title = element_text(size = 24), legend.text=element_text(size=14))
+  p5 <- ggplot(data = data_to_plot[data_to_plot$RatingType == 'related',]) + 
+    geom_point(aes(x = Order, y = RelatedCategory, color = ImageSet)) + ggtitle('Relatedness') +
+    xlab('') + ylab('') + theme(plot.title = element_text(hjust = 0.5)) +
+    scale_x_continuous(breaks = c(0, 90, 180, 270, 360), limits = c(0, 360)) + 
+    theme(axis.text = element_text(size = 18), plot.title = element_text(size = 24), legend.text=element_text(size=14))
+  filename <- paste(subject, 'responses.png', sep = '_')
+  png(filename, width = 1400, height = 400)
+  print(annotate_figure(ggarrange(p5, p1, p2, p3, p4, ncol = 5, nrow = 1, common.legend = TRUE, legend = 'right'), top = text_grob(subject, color = 'red')))
+  dev.off()
+  print(p1 + ggtitle(subject))
+  print(p2 + ggtitle(subject))
+  print(p3 + ggtitle(subject))
+  print(p4 + ggtitle(subject))
+  print(p5 + ggtitle(subject))
+   
+}
+
+```
+
+## Summary Function
+
+```{r}
+library(reshape2)
+
+one_summary <- function(dataset, prefix, grouping_field){
+  #dataset will be filtered down to either: all subjects, injection users, non-injection users
+  #prefix will be added to the output variable names, for example: allsubjects_arousal_mean or injectionusers_arousal_mean
+  
+  #get raw mean for each image
+  mean_values <- aggregate(dataset[, c('Value')], 
+                            by = list(RatingType = dataset$RatingType, Group = dataset[, grouping_field]), 
+                            FUN = mean, na.rm = TRUE)
+  wide_mean_values <- dcast(mean_values, formula = Group ~ RatingType, value.var = 'x')
+
+  
+  category_data <- dataset[dataset$RatingType == 'related',]
+  #so we can easily get a count of 'Neither', 'Both', 'Opioid', 'Meth'
+  category_data$count_col <- 1
+  #get counts of 'neither' ratings
+  counts_neither <- aggregate(category_data[category_data$RelatedCategory == 'Neither', c('count_col')], 
+                            by = list(Group = category_data[category_data$RelatedCategory == 'Neither', grouping_field]), 
+                            FUN = sum, na.rm = TRUE)
+  names(counts_neither) <- c('Group', 'CountNeither')
+  #'get count of 'meth' ratings
+  counts_meth <- aggregate(category_data[category_data$RelatedCategory == 'Meth', c('count_col')], 
+                            by = list(Group = category_data[category_data$RelatedCategory == 'Meth', grouping_field]), 
+                            FUN = sum, na.rm = TRUE)
+  names(counts_meth) <- c('Group', 'CountMeth')
+  
+  all_counts <- merge(counts_neither, counts_meth, all = TRUE)
+  #get count of 'opioid' ratings
+  counts_opioid <- aggregate(category_data[category_data$RelatedCategory == 'Opioid', c('count_col')], 
+                            by = list(Group = category_data[category_data$RelatedCategory == 'Opioid', grouping_field]), 
+                            FUN = sum, na.rm = TRUE)
+  names(counts_opioid) <- c('Group', 'CountOpioid')
+  
+  all_counts <- merge(all_counts, counts_opioid, all = TRUE)
+  #get count of 'both' ratings
+  counts_both <- aggregate(category_data[category_data$RelatedCategory == 'Both', c('count_col')], 
+                            by = list(Group = category_data[category_data$RelatedCategory == 'Both', grouping_field]), 
+                            FUN = sum, na.rm = TRUE)
+  names(counts_both) <- c('Group', 'CountBoth')
+  
+  all_counts <- merge(all_counts, counts_both, all = TRUE)
+  #any 'NAs that appear here are ratings that never happened--e.g. control images that were never rated as related to meth
+  all_counts[is.na(all_counts)] <- 0
+  count_cols <- c('CountNeither', 'CountMeth', 'CountOpioid', 'CountBoth')
+  all_counts$FractionNeither <- all_counts$CountNeither / rowSums(all_counts[, count_cols])
+  all_counts$FractionMeth <- all_counts$CountMeth / rowSums(all_counts[, count_cols])
+  all_counts$FractionOpioid <- all_counts$CountOpioid / rowSums(all_counts[, count_cols])
+  all_counts$FractionBoth <- all_counts$CountBoth / rowSums(all_counts[, count_cols])
+  
+  #this will be a number from -1 to 1: -1 for meth, 1 for opioid, and 0 for meth=opioid and many both/neither
+  all_counts$MethToOpioid <- (all_counts$CountOpioid - all_counts$CountMeth) / (all_counts$CountMeth + all_counts$CountOpioid + all_counts$CountBoth + all_counts$CountNeither)
+  
+  
+  #add prefix to all_counts column names
+  names(all_counts)[!(names(all_counts) %in% c('Group'))] <-
+    paste(prefix, names(all_counts)[!(names(all_counts) %in% c('Group'))], sep = '_')
+  
+  #add _mean to the column names
+  names(wide_mean_values)[names(wide_mean_values) %in% c('arousal', 'craving', 'related', 'typicality', 'valence', 'valence_fromneutral')] <- 
+    paste(prefix, names(wide_mean_values)[names(wide_mean_values) %in% c('arousal', 'craving', 'related', 'typicality', 'valence', 'valence_fromneutral')], 'mean', sep = '_')
+  
+  #get raw SD for each image
+  sd_values <- aggregate(dataset[, c('Value')], 
+                              by = list(RatingType = dataset$RatingType, Group = dataset[, grouping_field]), 
+                              FUN = sd, na.rm = TRUE)
+  wide_sd_values <- dcast(sd_values, formula = Group ~ RatingType, value.var = 'x')
+
+  #add _sd to the column names
+  names(wide_sd_values)[names(wide_sd_values) %in% c('arousal', 'craving', 'related', 'typicality', 'valence', 'valence_fromneutral')] <- 
+    paste(prefix, names(wide_sd_values)[names(wide_sd_values) %in% c('arousal', 'craving', 'related', 'typicality', 'valence', 'valence_fromneutral')], 'sd', sep = '_')
+
+
+  #merge them into one table
+  merged_summary_values <- merge(wide_mean_values, wide_sd_values)
+
+  merged_summary_values <- merge(merged_summary_values, all_counts)
+  
+  return(merged_summary_values)
+}
+
+
+
+```
+
+
+## Simple Means/SDs for each image
+
+Will report means/SDs for each image among all subjects, injection users, and non-injection users.
+
+
+```{r}
+#also get abs(valence - 5) for each rating--distance from neutral
+valence_rows <- subject_data[subject_data$RatingType == 'valence',]
+valence_rows$RatingType <- 'valence_fromneutral'
+valence_rows$Value <- abs(valence_rows$Value - 5)
+subject_data <- rbind(subject_data, valence_rows)
+
+
+all_data_summaries <- one_summary(subject_data, 'allsubjects', 'ImageSetFile')
+
+injection_user_summaries <- one_summary(subject_data[subject_data$InjectionUser,], 'injectionusers', 'ImageSetFile')
+noninjection_user_summaries <- one_summary(subject_data[!subject_data$InjectionUser,], 'noninjectionusers', 'ImageSetFile')
+
+merged_summary_values <- merge(all_data_summaries, injection_user_summaries)
+merged_summary_values <- merge(merged_summary_values, noninjection_user_summaries)
+
+#now, add in HSV values computed by MATLAB
+hsv_values <- read.csv('DCR_hsv_values.csv')
+
+hsv_values$Group <- paste(hsv_values$ImageSet, hsv_values$File)
+merged_summary_values <- merge(merged_summary_values, hsv_values)
+
+#add in category column
+category_data <- subject_data[!duplicated(subject_data$ImageSetFile), c('ImageSetFile', 'Category')]
+names(category_data) <- c('Group', 'Category')
+
+merged_summary_values <- merge(merged_summary_values, category_data)
+
+merged_summary_values$p_cravingdelta_injectionVnon <- NA
+###add in p-value for difference in craving between injection and non-injection users for each image
+for (image in unique(subject_data$ImageSetFile)){
+  injection_craving_ratings <- subject_data[(subject_data$ImageSetFile == image) & subject_data$InjectionUser & subject_data$RatingType == 'craving', 'Value']
+  noninjection_craving_ratings <- subject_data[(subject_data$ImageSetFile == image) & (!subject_data$InjectionUser) & subject_data$RatingType == 'craving', 'Value']
+  this_test <- t.test(injection_craving_ratings, noninjection_craving_ratings)
+  merged_summary_values[merged_summary_values$Group == image, 'p_cravingdelta_injectionVnon'] <- this_test$p.value
+}
+
+
+
+```
+
+##Category means/sds for the same measures as before
+```{r}
+
+###add in category means/SDs for the same measures
+
+all_data_summaries_categories <- one_summary(subject_data, 'allsubjects', 'Category')
+injection_user_summaries_categories <- one_summary(subject_data[subject_data$InjectionUser,], 'injectionusers', 'Category')
+noninjection_user_summaries_categories <- one_summary(subject_data[!subject_data$InjectionUser,], 'noninjectionusers', 'Category')
+
+merged_summary_values_categories <- merge(all_data_summaries_categories, injection_user_summaries_categories)
+merged_summary_values_categories <- merge(merged_summary_values_categories, noninjection_user_summaries_categories)
+
+###add in mean/sd of hue/saturation/value mean/sd
+this_mean_values <- aggregate(merged_summary_values[, c('hue_mean')], 
+                            by = list(Category = merged_summary_values$Category), 
+                            FUN = mean, na.rm = TRUE)
+names(this_mean_values) <- c('Group', 'hue_mean')
+this_sd_values <- aggregate(merged_summary_values[, c('hue_mean')], 
+                            by = list(Category = merged_summary_values$Category), 
+                            FUN = sd, na.rm = TRUE)
+names(this_sd_values) <- c('Group', 'hue_sd')
+merged_summary_values_categories <- merge(merged_summary_values_categories, this_mean_values)
+merged_summary_values_categories <- merge(merged_summary_values_categories, this_sd_values)
+
+##saturation
+this_mean_values <- aggregate(merged_summary_values[, c('saturation_mean')], 
+                            by = list(Category = merged_summary_values$Category), 
+                            FUN = mean, na.rm = TRUE)
+names(this_mean_values) <- c('Group', 'saturation_mean')
+this_sd_values <- aggregate(merged_summary_values[, c('saturation_mean')], 
+                            by = list(Category = merged_summary_values$Category), 
+                            FUN = sd, na.rm = TRUE)
+names(this_sd_values) <- c('Group', 'saturation_sd')
+merged_summary_values_categories <- merge(merged_summary_values_categories, this_mean_values)
+merged_summary_values_categories <- merge(merged_summary_values_categories, this_sd_values)
+
+##value
+this_mean_values <- aggregate(merged_summary_values[, c('value_mean')], 
+                            by = list(Category = merged_summary_values$Category), 
+                            FUN = mean, na.rm = TRUE)
+names(this_mean_values) <- c('Group', 'value_mean')
+this_sd_values <- aggregate(merged_summary_values[, c('value_mean')], 
+                            by = list(Category = merged_summary_values$Category), 
+                            FUN = sd, na.rm = TRUE)
+names(this_sd_values) <- c('Group', 'value_sd')
+merged_summary_values_categories <- merge(merged_summary_values_categories, this_mean_values)
+merged_summary_values_categories <- merge(merged_summary_values_categories, this_sd_values)
+
+#put ImageSet back in
+library(stringr)
+merged_summary_values_categories$ImageSet <- str_split_fixed(merged_summary_values_categories$Group, '_', 2)[,1]
+
+###add in p-value for difference in craving between injection and non-injection users for each category
+merged_summary_values_categories$p_cravingdelta_injectionVnon <- NA
+for (category in unique(subject_data$Category)){
+  injection_craving_ratings <- subject_data[(subject_data$Category == category) & subject_data$InjectionUser & subject_data$RatingType == 'craving', 'Value']
+  noninjection_craving_ratings <- subject_data[(subject_data$Category == category) & (!subject_data$InjectionUser) & subject_data$RatingType == 'craving', 'Value']
+  this_test <- t.test(injection_craving_ratings, noninjection_craving_ratings)
+  merged_summary_values_categories[merged_summary_values_categories$Group == category, 'p_cravingdelta_injectionVnon'] <- this_test$p.value
+}
+
+
+
+
+library(dplyr)
+library(data.table)
+
+merged_summary_values <- rbindlist(list(merged_summary_values, merged_summary_values_categories), fill = TRUE, use.names = TRUE)
+merged_summary_values <- data.frame(merged_summary_values)
+```
+  
+  
+  
+```{r}
+
+
+all_data_summaries_sets <- one_summary(subject_data, 'allsubjects', 'ImageSet')
+injection_user_summaries_sets <- one_summary(subject_data[subject_data$InjectionUser,], 'injectionusers', 'ImageSet')
+noninjection_user_summaries_sets <- one_summary(subject_data[!subject_data$InjectionUser,], 'noninjectionusers', 'ImageSet')
+
+merged_summary_values_sets <- merge(all_data_summaries_sets, injection_user_summaries_sets)
+merged_summary_values_sets <- merge(merged_summary_values_sets, noninjection_user_summaries_sets)
+
+
+###HSV code
+
+
+###add in mean/sd of hue/saturation/value mean/sd
+this_mean_values <- aggregate(merged_summary_values[, c('hue_mean')], 
+                            by = list(ImageSet = merged_summary_values$ImageSet), 
+                            FUN = mean, na.rm = TRUE)
+names(this_mean_values) <- c('Group', 'hue_mean')
+this_sd_values <- aggregate(merged_summary_values[, c('hue_mean')], 
+                            by = list(ImageSet = merged_summary_values$ImageSet), 
+                            FUN = sd, na.rm = TRUE)
+names(this_sd_values) <- c('Group', 'hue_sd')
+merged_summary_values_sets <- merge(merged_summary_values_sets, this_mean_values)
+merged_summary_values_sets <- merge(merged_summary_values_sets, this_sd_values)
+
+##saturation
+this_mean_values <- aggregate(merged_summary_values[, c('saturation_mean')], 
+                            by = list(ImageSet = merged_summary_values$ImageSet), 
+                            FUN = mean, na.rm = TRUE)
+names(this_mean_values) <- c('Group', 'saturation_mean')
+this_sd_values <- aggregate(merged_summary_values[, c('saturation_mean')], 
+                            by = list(ImageSet = merged_summary_values$ImageSet), 
+                            FUN = sd, na.rm = TRUE)
+names(this_sd_values) <- c('Group', 'saturation_sd')
+merged_summary_values_sets <- merge(merged_summary_values_sets, this_mean_values)
+merged_summary_values_sets <- merge(merged_summary_values_sets, this_sd_values)
+
+##value
+this_mean_values <- aggregate(merged_summary_values[, c('value_mean')], 
+                            by = list(ImageSet = merged_summary_values$ImageSet), 
+                            FUN = mean, na.rm = TRUE)
+names(this_mean_values) <- c('Group', 'value_mean')
+this_sd_values <- aggregate(merged_summary_values[, c('value_mean')], 
+                            by = list(ImageSet = merged_summary_values$ImageSet), 
+                            FUN = sd, na.rm = TRUE)
+names(this_sd_values) <- c('Group', 'value_sd')
+merged_summary_values_sets <- merge(merged_summary_values_sets, this_mean_values)
+merged_summary_values_sets <- merge(merged_summary_values_sets, this_sd_values)
+
+#put ImageSet back in
+library(stringr)
+merged_summary_values_sets$ImageSet <- merged_summary_values_sets$Group
+
+###add in p-value for difference in craving between injection and non-injection users for each category
+merged_summary_values_sets$p_cravingdelta_injectionVnon <- NA
+for (ImageSet in unique(subject_data$ImageSet)){
+  injection_craving_ratings <- subject_data[(subject_data$ImageSet == ImageSet) & subject_data$InjectionUser & subject_data$RatingType == 'craving', 'Value']
+  noninjection_craving_ratings <- subject_data[(subject_data$ImageSet == ImageSet) & (!subject_data$InjectionUser) & subject_data$RatingType == 'craving', 'Value']
+  this_test <- t.test(injection_craving_ratings, noninjection_craving_ratings)
+  merged_summary_values_sets[merged_summary_values_sets$Group == ImageSet, 'p_cravingdelta_injectionVnon'] <- this_test$p.value
+}
+
+library(dplyr)
+library(data.table)
+
+merged_summary_values <- rbindlist(list(merged_summary_values, merged_summary_values_sets), fill = TRUE, use.names = TRUE)
+merged_summary_values <- data.frame(merged_summary_values)
+
+###HSV code
+
+
+
+```
+
+
+
+  
+```{r}
+#variables to write out, in a reasonable order
+vars_to_save <- c("Group", "ImageSet", "File", "Category",
+                  "allsubjects_valence_mean", "allsubjects_valence_sd", "allsubjects_arousal_mean", "allsubjects_arousal_sd", 
+                  "allsubjects_craving_mean", "allsubjects_craving_sd", "allsubjects_typicality_mean", "allsubjects_typicality_sd",
+                  "allsubjects_FractionNeither", "allsubjects_FractionMeth", "allsubjects_FractionOpioid", "allsubjects_FractionBoth", "allsubjects_MethToOpioid",
+                  "injectionusers_valence_mean", "injectionusers_valence_sd", "injectionusers_arousal_mean", "injectionusers_arousal_sd", 
+                  "injectionusers_craving_mean", "injectionusers_craving_sd", "injectionusers_typicality_mean", "injectionusers_typicality_sd",
+                  "injectionusers_FractionNeither", "injectionusers_FractionMeth", "injectionusers_FractionOpioid", "injectionusers_FractionBoth", "injectionusers_MethToOpioid",
+                  "noninjectionusers_valence_mean", "noninjectionusers_valence_sd", "noninjectionusers_arousal_mean", "noninjectionusers_arousal_sd", 
+                  "noninjectionusers_craving_mean", "noninjectionusers_craving_sd", "noninjectionusers_typicality_mean", "noninjectionusers_typicality_sd",
+                  "noninjectionusers_FractionNeither", "noninjectionusers_FractionMeth", "noninjectionusers_FractionOpioid", "noninjectionusers_FractionBoth",
+                  "noninjectionusers_MethToOpioid",
+                  "hue_mean", "hue_sd", "saturation_mean", "saturation_sd", "value_mean", "value_sd", "p_cravingdelta_injectionVnon")
+
+
+write.csv(format(merged_summary_values[, vars_to_save], digits = 3), 'DCR_summaries_7-3-2019.csv', row.names = FALSE)
+
+#only want image summaries, not category means, for example
+plot_vals <- merged_summary_values[!is.na(merged_summary_values$File),]
+#see how distance from neutral compares with mean valence
+ggplot(data = plot_vals, aes(x = allsubjects_valence_mean, y = allsubjects_valence_fromneutral_mean, color = ImageSet)) + geom_point() + 
+  xlab('valence') + ylab('valence distance to mean')+ geom_smooth(method = 'lm')
+print("#####Test for control images")
+cor.test(plot_vals$allsubjects_valence_mean[plot_vals$ImageSet == 'control'],plot_vals$allsubjects_valence_fromneutral_mean[plot_vals$ImageSet == 'control'] )
+print("#####Test for meth images")
+cor.test(plot_vals$allsubjects_valence_mean[plot_vals$ImageSet == 'meth'],plot_vals$allsubjects_valence_fromneutral_mean[plot_vals$ImageSet == 'meth'] )
+print("#####Test for opioid images")
+cor.test(plot_vals$allsubjects_valence_mean[plot_vals$ImageSet == 'opioid'],plot_vals$allsubjects_valence_fromneutral_mean[plot_vals$ImageSet == 'opioid'] )
+
+
+scatter_data <- subject_data[subject_data$RatingType == c('valence'), c('id', 'ImageSet', 'ImageSetFile', 'RatingType', 'Value')]
+
+names(scatter_data)[names(scatter_data) == 'Value'] <- 'Valence'
+scatter_data$ValenceFromMean <- abs(scatter_data$Valence - 5)
+
+#c <- cor(craving_data$Craving, typicality_data$Typicality)
+
+
+ggplot(scatter_data, aes(x = Valence, y = ValenceFromMean, color = ImageSet)) + geom_point() + geom_smooth(method = 'lm') 
+
+ggplot(scatter_data, aes(x = Valence, y = ValenceFromMean, color = ImageSet)) + geom_hex() + geom_smooth(method = 'lm') 
+
+
+```
+
+
+
+##Scatter plot of individual craving/typicality ratings, just within drug cues
+
+```{r}
+
+scatter_data <- subject_data[subject_data$ImageSet %in% c('meth', 'opioid'), c('id', 'ImageSet', 'ImageSetFile', 'RatingType', 'Value')]
+
+craving_data <- scatter_data[scatter_data$RatingType == 'craving',]
+typicality_data <- scatter_data[scatter_data$RatingType == 'typicality',]
+
+craving_data$Craving <- craving_data$Value
+typicality_data$Typicality <- typicality_data$Value
+
+correlation <- cor(craving_data$Craving, typicality_data$Typicality)
+
+scatter_data <- merge(craving_data[, c('id', 'ImageSet', 'ImageSetFile', 'Craving')], typicality_data[, c('id', 'ImageSet', 'ImageSetFile', 'Typicality')])
+
+ggplot(scatter_data, aes(x = Craving, y = Typicality, color = ImageSet)) + geom_point() + geom_smooth(method = 'lm') + 
+  ggtitle(paste0('r = ', round(correlation, 2), '\nBut not appropriate, since multiple measures per subject'))
+
+mean_scatter_data <- merged_summary_values[merged_summary_values$ImageSet %in% c('meth', 'opioid'),]
+correlation <- cor(mean_scatter_data$allsubjects_craving_mean, mean_scatter_data$allsubjects_typicality_mean)
+ggplot(mean_scatter_data, aes(x = allsubjects_craving_mean, y = allsubjects_typicality_mean, color = ImageSet)) + geom_point() + geom_smooth(method = 'lm')  +
+  scale_y_continuous(breaks = c(0, 25, 50, 75, 100), limits = c(0, 100)) +
+  scale_x_continuous(breaks = c(0, 25, 50, 75, 100), limits = c(0, 100)) +
+  xlab('Craving Mean') + ylab ('Typicality Mean') + ggtitle(paste0('r = ', round(correlation, 2)))
+
+
+
+```
+
+##Histograms for each image set
+
+```{r}
+
+make_plotset <- function(data_to_plot, main_title, filename, group){
+  p1 <- ggplot(data_to_plot, aes_string(x = 'allsubjects_valence_mean', fill = 'ImageSet')) + 
+    geom_histogram(binwidth = 0.5, alpha = 0.5, position = 'identity') + theme(legend.position="none")
+  p2 <- ggplot(data_to_plot, aes_string(x = 'allsubjects_arousal_mean', fill = 'ImageSet')) + 
+    geom_histogram(binwidth = 0.5, alpha = 0.5, position = 'identity') + theme(legend.position="none")
+  p3 <- ggplot(data_to_plot, aes_string(x = 'allsubjects_craving_mean', fill = 'ImageSet')) + 
+    geom_histogram(binwidth = 10, alpha = 0.5, position = 'identity') + theme(legend.position="none")
+  p4 <- ggplot(data_to_plot, aes_string(x = 'allsubjects_typicality_mean', fill = 'ImageSet')) + 
+    geom_histogram(binwidth = 10, alpha = 0.5, position = 'identity') + theme(legend.position="none")
+  p5 <- ggplot(data_to_plot, aes_string(x = 'hue_mean', fill = 'ImageSet')) + 
+    geom_histogram(binwidth = 0.1, alpha = 0.5, position = 'identity') + theme(legend.position="none")
+  p6 <- ggplot(data_to_plot, aes_string(x = 'saturation_mean', fill = 'ImageSet')) + 
+    geom_histogram(binwidth = 0.1, alpha = 0.5, position = 'identity') + theme(legend.position="none")
+  p7 <- ggplot(data_to_plot, aes_string(x = 'value_mean', fill = 'ImageSet')) + geom_histogram(binwidth = 0.1, alpha = 0.5, position = 'identity')
+  #png(filename, width = 1400, height = 400)
+  #grid.arrange(p1, p2, p3, p4, p5, p6, p7, ncol = 7, top = textGrob(main_title, gp=gpar(fontsize = 50)))
+  #dev.off()
+  print(p1)
+  print(p2)
+  print(p3)
+  print(p4)
+  print(p5)
+  print(p6)
+  print(p7)
+}
+library(sm)
+
+one_density_plot <- function(var_to_plot, label){
+
+  sm.density.compare(merged_summary_values[, var_to_plot], as.factor(merged_summary_values$ImageSet), lwd = 5)
+  title(main=label)
+  colfill<-c(2:(2+length(levels(as.factor(merged_summary_values$ImageSet))))) 
+  legend('topright', levels(as.factor(merged_summary_values$ImageSet)), fill=colfill)
+}
+
+
+
+source('R_rainclouds.R')
+library(cowplot)
+
+one_raincloud_plot <- function(var_to_plot, label){
+
+
+  p6 <- ggplot(subject_data[subject_data$RatingType == 'arousal',],aes(x=ImageSet,y=Value, fill = ImageSet, colour = ImageSet))+
+    geom_flat_violin(position = position_nudge(x = .25, y = 0),adjust =2, trim =  FALSE)+
+    #geom_point(position = position_jitter(width = .15), size = .25)+
+    geom_point(position = position_jitter(width = 1), size = .25)+
+    geom_boxplot(aes(x = as.numeric(ImageSet)+0.25, y = Value),outlier.shape = NA,
+    alpha = 0.3, width = .1, colour = "BLACK") +
+    ylab('Arousal')+xlab('ImageSet')+coord_flip()+theme_cowplot()+guides(fill = FALSE,
+    colour = FALSE) +
+    scale_colour_brewer(palette = "Dark2")+
+    scale_fill_brewer(palette = "Dark2")+
+    ggtitle("Figure R6: Change in Colour Palette")
+  ggsave(paste0(label, '.png'), width = w, height = h)
+  p6
+}
+
+subject_data$ImageSetCap <- as.character(subject_data$ImageSet)
+subject_data$ImageSetCap[subject_data$ImageSetCap == 'meth'] <- 'Meth'
+subject_data$ImageSetCap[subject_data$ImageSetCap == 'opioid'] <- 'Opioid'
+subject_data$ImageSetCap[subject_data$ImageSetCap == 'control'] <- 'Control'
+subject_data$ImageSetCap <- factor(subject_data$ImageSetCap, levels = c('Meth', 'Opioid', 'Control'))
+
+p1 <- ggplot(subject_data[subject_data$RatingType == 'craving',],aes(x=ImageSetCap,y=Value, fill = ImageSetCap, colour = ImageSetCap))+
+  geom_flat_violin(position = position_nudge(x = .25, y = 0),adjust =2, trim =  FALSE)+
+  geom_point(position = position_jitter(width = .15), size = .25)+
+  geom_boxplot(aes(x = as.numeric(ImageSetCap)+0.25, y = Value),outlier.shape = NA,
+  alpha = 0.3, width = .1, colour = "BLACK") +
+  ylab('')+xlab('')+coord_flip()+theme_cowplot()+guides(fill = FALSE,
+  colour = FALSE) +
+  scale_colour_brewer(palette = "Dark2")+
+  scale_fill_brewer(palette = "Dark2")+
+  ggtitle("Craving") + scale_y_continuous(breaks = c(0, 25, 50, 75, 100), limits = c(0, 100))
+
+p2 <- ggplot(subject_data[subject_data$RatingType == 'arousal',],aes(x=ImageSetCap,y=Value, fill = ImageSetCap, colour = ImageSetCap))+
+  geom_flat_violin(position = position_nudge(x = .25, y = 0),adjust =2, trim =  FALSE)+
+  geom_point(position = position_jitter(width = .15), size = .25)+
+  geom_boxplot(aes(x = as.numeric(ImageSetCap)+0.25, y = Value),outlier.shape = NA,
+  alpha = 0.3, width = .1, colour = "BLACK") +
+  ylab('')+xlab('')+coord_flip()+theme_cowplot()+guides(fill = FALSE,
+  colour = FALSE) +
+  scale_colour_brewer(palette = "Dark2")+
+  scale_fill_brewer(palette = "Dark2")+
+  ggtitle("Arousal") + scale_y_continuous(breaks = c(1, 3, 5, 7, 9), limits = c(1, 9))
+
+p3 <- ggplot(subject_data[subject_data$RatingType == 'valence',],aes(x=ImageSetCap,y=Value, fill = ImageSetCap, colour = ImageSetCap))+
+  geom_flat_violin(position = position_nudge(x = .25, y = 0),adjust =2, trim =  FALSE)+
+  geom_point(position = position_jitter(width = .15), size = .25)+
+  geom_boxplot(aes(x = as.numeric(ImageSetCap)+0.25, y = Value),outlier.shape = NA,
+  alpha = 0.3, width = .1, colour = "BLACK") +
+  ylab('')+xlab('')+coord_flip()+theme_cowplot()+guides(fill = FALSE,
+  colour = FALSE) +
+  scale_colour_brewer(palette = "Dark2")+
+  scale_fill_brewer(palette = "Dark2")+
+  ggtitle("Valence") + scale_y_continuous(breaks = c(1, 3, 5, 7, 9), limits = c(1, 9))
+
+
+
+png('rainclouds.png', width = 1400, height = 400)
+print(annotate_figure(ggarrange(p1, p2, p3, ncol = 3, nrow = 1, common.legend = TRUE, legend = 'right'), top = text_grob('Rainclouds', color = 'red')))
+dev.off()
+
+
+
+
+p4 <- ggplot(subject_data,aes(x=ImageSetCap,y=millisecondsOnPage / 1000, fill = ImageSetCap, colour = ImageSetCap))+
+  geom_flat_violin(position = position_nudge(x = .25, y = 0),adjust =2, trim =  FALSE)+
+  geom_point(position = position_jitter(width = .15), size = .25)+
+  geom_boxplot(aes(x = as.numeric(ImageSetCap)+0.25, y = millisecondsOnPage / 1000),outlier.shape = NA,
+  alpha = 0.3, width = .1, colour = "BLACK") +
+  ylab('')+xlab('')+coord_flip()+theme_cowplot()+guides(fill = FALSE,
+  colour = FALSE) +
+  scale_colour_brewer(palette = "Dark2")+
+  scale_fill_brewer(palette = "Dark2")+
+  ggtitle("SecondsOnPage") #+ scale_y_continuous(breaks = c(1, 3, 5, 7, 9), limits = c(1, 9))
+
+p5 <- ggplot(subject_data,aes(x=ImageSetCap,y=responseDelay / 1000, fill = ImageSetCap, colour = ImageSetCap))+
+  geom_flat_violin(position = position_nudge(x = .25, y = 0),adjust =2, trim =  FALSE)+
+  geom_point(position = position_jitter(width = .15), size = .25)+
+  geom_boxplot(aes(x = as.numeric(ImageSetCap)+0.25, y = responseDelay / 1000),outlier.shape = NA,
+  alpha = 0.3, width = .1, colour = "BLACK") +
+  ylab('')+xlab('')+coord_flip()+theme_cowplot()+guides(fill = FALSE,
+  colour = FALSE) +
+  scale_colour_brewer(palette = "Dark2")+
+  scale_fill_brewer(palette = "Dark2")+
+  ggtitle("ResponseDelay") #+ scale_y_continuous(breaks = c(1, 3, 5, 7, 9), limits = c(1, 9))
+
+png('RTrainclouds.png', width = 1400, height = 400)
+print(annotate_figure(ggarrange(p4, p5, ncol = 1, nrow = 2, common.legend = TRUE, legend = 'right'), top = text_grob('RTRainclouds', color = 'red')))
+dev.off()
+
+p1 <- ggplot(subject_data[subject_data$RatingType == 'craving',], 
+            aes(x = Value, y = millisecondsOnPage / 1000,color = ImageSet)) + geom_point() +
+  xlab('Craving') + ylab('ScondsOnPage') + #scale_x_continuous(breaks = c(60, 70, 80, 90, 100), limits = c(60, 100)) + 
+    #scale_y_continuous(breaks = c(60, 70, 80, 90, 100), limits = c(60, 100)) + 
+  theme(axis.text = element_text(size = 18), plot.title = element_text(size = 24), legend.text=element_text(size=14)) +
+  geom_smooth(method = 'lm')
+p2 <- ggplot(subject_data[subject_data$RatingType == 'craving',], 
+            aes(x = Value, y = responseDelay / 1000,color = ImageSet)) + geom_point() +
+  xlab('Craving') + ylab('ResponseDelay') + #scale_x_continuous(breaks = c(60, 70, 80, 90, 100), limits = c(60, 100)) + 
+    #scale_y_continuous(breaks = c(60, 70, 80, 90, 100), limits = c(60, 100)) + 
+  theme(axis.text = element_text(size = 18), plot.title = element_text(size = 24), legend.text=element_text(size=14)) +
+  geom_smooth(method = 'lm')
+
+png('RTCravingScatter.png', width = 400, height = 800)
+print(annotate_figure(ggarrange(p1, p2, ncol = 1, nrow = 2, common.legend = TRUE, legend = 'right'), top = text_grob('RTScatters', color = 'red')))
+dev.off()
+
+
+
+craving_data <- subject_data[subject_data$RatingType == 'craving',]
+
+#set threshold of 20 seconds, remove 0.6% of data
+sum(craving_data$millisecondsOnPage > 10000) / nrow(craving_data)
+
+one_density_plot('allsubjects_valence_mean', 'Valence')
+one_density_plot('allsubjects_arousal_mean', 'Arousal')
+one_density_plot('allsubjects_craving_mean', 'Craving')
+one_density_plot('allsubjects_typicality_mean', 'Typicality')
+one_density_plot('hue_mean', 'Hue')
+one_density_plot('saturation_mean', 'Saturation')
+one_density_plot('value_mean', 'Value')
+
+
+
+```
+
+##Correlations Between Mean Ratings for Each Image Set
+
+```{r}
+
+library(corrplot)
+library(PerformanceAnalytics)
+cols_to_use <-  c('allsubjects_valence_mean', 'allsubjects_valence_fromneutral_mean', 'allsubjects_arousal_mean', 
+                  'allsubjects_craving_mean')
+
+one_corrplot <- function(dset, title){
+  
+  col2 <- colorRampPalette(rev(c("#67001F", "#B2182B", "#D6604D", "#F4A582",
+                           "#FDDBC7", "#FFFFFF", "#D1E5F0", "#92C5DE",
+                           "#4393C3", "#2166AC", "#053061")))
+
+  
+  corvals <- cor(dset)
+  rownames(corvals) <- colnames(corvals) <- c('valence', 'abs_valence', 'arousal', 'craving')
+  corrplot.mixed(corvals, upper = 'ellipse', lower = 'number', title = title, mar=c(0,0,2,0), 
+                 upper.col = col2(50), lower.col = col2(50))
+  chart.Correlation(dset)
+  #returns z-transformed correlations, for easier comparisons between matrices
+  return(atanh(corvals))
+}
+
+p <- ggplot(merged_summary_values[merged_summary_values$ImageSet %in% c('meth', 'opioid'),], aes(x = allsubjects_craving_mean, y = allsubjects_typicality_mean,
+                                                                                           color = ImageSet)) + geom_point() +
+  xlab('Craving') + ylab('Typicality') + scale_x_continuous(breaks = c(60, 70, 80, 90, 100), limits = c(60, 100)) + 
+    scale_y_continuous(breaks = c(60, 70, 80, 90, 100), limits = c(60, 100)) + 
+  theme(axis.text = element_text(size = 18), plot.title = element_text(size = 24), legend.text=element_text(size=14)) +
+  geom_smooth(method = 'lm')
+
+
+
+#wide_subject_data <- dcast(subject_data, formula = id ~ RatingType + ImageSetFile, value.var = 'Value')
+
+
+p <- ggplot(subject_data[subject_data$ImageSet %in% c('meth', 'opioid'),], 
+            aes(x = allsubjects_craving_mean, y = allsubjects_typicality_mean,color = ImageSet)) + geom_point() +
+  xlab('Craving') + ylab('Typicality') + scale_x_continuous(breaks = c(60, 70, 80, 90, 100), limits = c(60, 100)) + 
+    scale_y_continuous(breaks = c(60, 70, 80, 90, 100), limits = c(60, 100)) + 
+  theme(axis.text = element_text(size = 18), plot.title = element_text(size = 24), legend.text=element_text(size=14)) +
+  geom_smooth(method = 'lm')
+
+
+
+
+
+drug_zs <- one_corrplot(merged_summary_values[merged_summary_values$ImageSet %in% c('meth', 'opioid'), cols_to_use], 'Meth/Opioid')
+meth_zs <- one_corrplot(merged_summary_values[merged_summary_values$ImageSet %in% c('meth'), cols_to_use], 'Meth')
+opioid_zs <- one_corrplot(merged_summary_values[merged_summary_values$ImageSet %in% c('opioid'), cols_to_use], 'Opioid')
+control_zs <- one_corrplot(merged_summary_values[merged_summary_values$ImageSet %in% c('control'), cols_to_use], 'control')
+
+
+#to compare correlation z-scores--here we use N1=N2=120, the number of images
+#Zobserved = (z1 - z2) / (square root of [ (1 / N1 - 3) + (1 / N2 - 3) ])
+meth_opioid_deltazs <- (meth_zs - opioid_zs) / sqrt(1/(120-3) + 1/(120-3))
+meth_opioid_deltaps <- 2*pnorm(-abs(meth_opioid_deltazs))
+
+col2 <- colorRampPalette(rev(c("#67001F", "#B2182B", "#D6604D", "#F4A582",
+                           "#FDDBC7", "#FFFFFF", "#D1E5F0", "#92C5DE",
+                           "#4393C3", "#2166AC", "#053061")))
+
+
+corrplot.mixed(meth_opioid_deltazs, upper = 'color', lower = 'number', title = 'Delta Z Score (Meth - Opioid)', mar=c(0,0,2,0), is.corr = FALSE,
+               p.mat = meth_opioid_deltaps, sig.level = 1, lower.col = col2(50), upper.col = col2(50))
+
+
+corrplot.mixed(meth_opioid_deltaps, upper = 'color', lower = 'number', title = 'Delta r p-values (Meth - Opioid)', mar=c(0,0,2,0), is.corr = FALSE,
+               lower.col = col2(50), upper.col = col2(50))
+
+
+#               p.mat = meth_opioid_deltaps, sig.level = 0.01, lower.col = col2(50), upper.col = col2(50))
+print('Matrix of p-values for Correlation Differences')
+print(meth_opioid_deltaps)
+print('Matrix of fdr corrected p-values')
+p.adjust(meth_opioid_deltaps[upper.tri(meth_opioid_deltaps)], method = 'fdr')
+
+```
+
+##Craving LMEs
+
+meth_craving  ~ Age + sex + age_of_meth_onset + duration_of_meth_use + cost_of_meth + days_of_meth + duration_of_current_abstinance
+
+``` {r}
+#first, corrplot of these variables
+clinical_columns <- c('Age', 'SexMale', 'InjectionUser', 'MethOnsetAge', 'MethMonthsUsed', 'MethDollars',
+                   'MethDaysLastMonth','MethDaysAbstinant', 'OpioidOnsetAge', 'OpioidMonthsUsed', 
+                   'OpioidDaysLastMonth', 'OpioidDaysAbstinant', 'HeroinOnsetAge', 'HeroinMonthsUsed', 
+                   'HeroinDaysLastMonth', 'HeroinDaysAbstinant', 'OpioidOrHeroinOnsetAge', 
+                   'OpioidOrHeroinMonthsUsed', 'OpioidOrHeroinDollars', 'OpioidOrHeroinDaysLastMonth','OpioidOrHeroinDaysAbstinant') 
+col2 <- colorRampPalette(rev(c("#67001F", "#B2182B", "#D6604D", "#F4A582",
+                           "#FDDBC7", "#FFFFFF", "#D1E5F0", "#92C5DE",
+                           "#4393C3", "#2166AC", "#053061")))
+
+clinical_data$SexMale <- 0
+clinical_data$SexMale[clinical_data$Sex == 'Male'] <- 1
+
+corvals <- cor(clinical_data[, clinical_columns], use = 'pairwise.complete')
+png('ClinicalCorrelations.png', width = 1000, height = 1000)
+corrplot.mixed(corvals, upper = 'ellipse', lower = 'number', title = 'Clinical Variable Correlations', mar=c(0,0,2,0), 
+               upper.col = col2(50), lower.col = col2(50), tl.pos = 'lt')
+dev.off()
+png('ClinicalScatterplotMatrix.png', width = 1000, height = 1000)
+chart.Correlation(clinical_data[, clinical_columns])
+dev.off()
+
+library(tableone)
+CreateTableOne(vars = clinical_columns, data = clinical_data)
+
+
+library(nlme)
+library(sjmisc)
+library(sjPlot)
+library(lme4)
+library(lmerTest)
+
+
+this_lme <- lmer(Value ~ Age + Sex + MethOnsetAge + MethMonthsUsed + MethDollars + MethDaysLastMonth + MethDaysAbstinant + Time * Visit +(1 | id), 
+              data = subject_data[subject_data$RatingType == 'craving' & subject_data$ImageSet == 'meth',])
+print(plot_model(this_lme, title = 'meth craving', show.values = TRUE, type = 'std', order.terms = c(1,2,8,9,10,3,4,6,5,7)))
+print(summary(this_lme))
+print(anova(this_lme))
+
+
+
+scaled_data <- subject_data[subject_data$RatingType == 'craving' & subject_data$ImageSet == 'meth',]
+scaled_data[, c('Age', 'MethOnsetAge',  'MethMonthsUsed', 'MethDollars',  'MethDaysLastMonth',  'MethDaysAbstinant')] <-
+  scale(scaled_data[, c('Age', 'MethOnsetAge',  'MethMonthsUsed', 'MethDollars',  'MethDaysLastMonth',  'MethDaysAbstinant')])
+this_lme <- lmer(Value ~ Age + Sex + MethOnsetAge + MethMonthsUsed + MethDollars + MethDaysLastMonth + MethDaysAbstinant + Time * Visit + (1 | id), 
+              data = scaled_data)
+print(plot_model(this_lme, title = 'meth craving scaled predictors', show.values = TRUE, type = 'std', order.terms = c(1,2,8,9,10,3,4,6,5,7)))
+print(summary(this_lme))
+print(anova(this_lme))
+
+
+this_lme <- lmer(Value ~ Age + Sex + OpioidOrHeroinOnsetAge + OpioidOrHeroinMonthsUsed + OpioidOrHeroinDollars + 
+                   OpioidOrHeroinDaysLastMonth + OpioidOrHeroinDaysAbstinant + Time * Visit + (1 | id), 
+              data = subject_data[subject_data$RatingType == 'craving' & subject_data$ImageSet == 'opioid',])
+print(plot_model(this_lme, title = 'opioid craving', show.values = TRUE, type = 'std', order.terms = c(1,2,8, 9, 10, 3,4,6,5,7)))
+print(summary(this_lme))
+print(anova(this_lme))
+
+
+```
+
+##LMEs Of Image Ratings
+
+We will look drug and neutral images separately.
+For drug images, the model will be:  
+
+Value ~ Time \* Visit + (Age \* Sex \* ImageSet)^2 + (1 | id)  
+
+And for neutral images it will be:  
+
+Value ~ Time \* Visit + (Age \* Sex) + (1 | id)
+  
+  
+for valence, arousal, and craving separately  
+
+```{r}
+summarize_one_lme_drug <- function(dset, RatingType){
+  this_lme <- lmer(Value ~ Time * Visit + (Age * Sex * ImageSet)^2 + (1 | id), 
+                data = dset[dset$RatingType == RatingType,])
+  print(plot_model(this_lme, title = RatingType, show.values = TRUE, type = 'std'))
+  print(summary(this_lme))
+  #for using nlme instead of lme4--but can't get standardized betas in the forest plot
+  #that_lme <- lme(fixed = Value ~ Time * Visit + Age + Sex + ImageSet, random = ~ 1 | id, 
+  #              data = dset[dset$RatingType == RatingType,])
+  #print(summary(that_lme))
+  print(anova(this_lme))
+}
+summarize_one_lme_neutral <- function(dset, RatingType){
+  this_lme <- lmer(Value ~ Time * Visit + (Age * Sex) + (1 | id), 
+                data = dset[dset$RatingType == RatingType,])
+  print(plot_model(this_lme, title = RatingType, show.values = TRUE, type = 'std'))
+  print(summary(this_lme))
+  print(anova(this_lme))
+}
+```
+
+
+##Drug Cues
+
+```{r}
+
+
+summarize_one_lme_drug(subject_data[subject_data$ImageSet %in% c('meth', 'opioid'),], 'valence')
+summarize_one_lme_drug(subject_data[subject_data$ImageSet %in% c('meth', 'opioid'),], 'arousal')
+summarize_one_lme_drug(subject_data[subject_data$ImageSet %in% c('meth', 'opioid'),], 'typicality')
+summarize_one_lme_drug(subject_data[subject_data$ImageSet %in% c('meth', 'opioid'),], 'craving')
+
+```
+##Neutral Cues
+
+```{r}
+
+
+summarize_one_lme_neutral(subject_data[subject_data$ImageSet %in% c('control'),], 'valence')
+summarize_one_lme_neutral(subject_data[subject_data$ImageSet %in% c('control'),], 'arousal')
+summarize_one_lme_neutral(subject_data[subject_data$ImageSet %in% c('control'),], 'typicality')
+summarize_one_lme_neutral(subject_data[subject_data$ImageSet %in% c('control'),], 'craving')
+
+```
+
+##Subcategories within Meth/Opioid and Injection Use
+
+```{r}
+
+
+summarize_one_lme_drug_category <- function(dset, RatingType){
+  this_lme <- lmer(Value ~ Time * Visit + Age * Sex + InjectionUser * Category + (1 | id), 
+                data = dset[dset$RatingType == RatingType,])
+  print(plot_model(this_lme, title = paste(dset$ImageSet[1], RatingType), show.values = TRUE, type = 'std'))
+  print(summary(this_lme))
+  #for using nlme instead of lme4--but can't get standardized betas in the forest plot
+  #that_lme <- lme(fixed = Value ~ Time * Visit + Age + Sex + ImageSet, random = ~ 1 | id, 
+  #              data = dset[dset$RatingType == RatingType,])
+  #print(summary(that_lme))
+  print(anova(this_lme))
+}
+summarize_one_lme_drug_category(subject_data[subject_data$ImageSet %in% c('meth'),], 'valence')
+summarize_one_lme_drug_category(subject_data[subject_data$ImageSet %in% c('meth'),], 'arousal')
+summarize_one_lme_drug_category(subject_data[subject_data$ImageSet %in% c('meth'),], 'typicality')
+summarize_one_lme_drug_category(subject_data[subject_data$ImageSet %in% c('meth'),], 'craving')
+
+summarize_one_lme_drug_category(subject_data[subject_data$ImageSet %in% c('opioid'),], 'valence')
+summarize_one_lme_drug_category(subject_data[subject_data$ImageSet %in% c('opioid'),], 'arousal')
+summarize_one_lme_drug_category(subject_data[subject_data$ImageSet %in% c('opioid'),], 'typicality')
+summarize_one_lme_drug_category(subject_data[subject_data$ImageSet %in% c('opioid'),], 'craving')
+
+```
+
+
+
+##Image Characteristics--Hue, Saturation, Valence
+
+```{r}
+
+summarize_one_lm_imagechar <- function(dset, characteristic){
+  this_lm <- lm(as.formula(paste(characteristic, '~ ImageSet')), 
+                data = dset)
+  print(plot_model(this_lm, title = characteristic, show.values = TRUE, type = 'est'))
+  print(summary(this_lm))
+  print(anova(this_lm))
+}
+summarize_one_lm_imagechar(merged_summary_values, 'hue_mean')
+summarize_one_lm_imagechar(merged_summary_values, 'saturation_mean')
+summarize_one_lm_imagechar(merged_summary_values, 'value_mean')
+
+```
+
+
+```{r}
+
+#ddq_data <- read.csv('DDQ_Scores.csv')
+ddq_data <- read.csv('DCR_DDQScores-anonymized.csv')
+
+summarize_one_lme_ddq <- function(dset, subscore){
+  this_lme <- lmer(Value ~ Time + (1 | id), 
+                data = dset[dset$Subscore == subscore,])
+  print(plot_model(this_lme, title = subscore, show.values = TRUE, type = 'std'))
+  print(summary(this_lme))
+  print(anova(this_lme))
+}
+
+summarize_one_lme_ddq(ddq_data, 'Desire')
+summarize_one_lme_ddq(ddq_data, 'Neg')
+summarize_one_lme_ddq(ddq_data, 'Control')
+
+```
+
+
+
+##new LMEs for 7/2019
+
+need:
+all images
+craving|arousal|valence|absvalence ~ drug (M/O/N) + age + gender
+
+
+```{r}
+
+library(multcomp)
+
+summarize_one_lme_allimages <- function(dset, RatingType){
+  this_lme <- lmer(Value ~  ImageSet + Age + Sex + (1 | id), 
+                data = dset[dset$RatingType == RatingType,])
+  print(paste("LME OF ALL IMAGES FOR:", RatingType))
+  print(plot_model(this_lme, title = paste(RatingType), show.values = TRUE, type = 'std', order.terms = c(3,4,1,2)))
+  print(summary(this_lme))
+  print(anova(this_lme))
+  
+  this_lme.ht <- glht(this_lme, linfct = mcp(ImageSet = "Tukey"))
+  summary(this_lme.ht, test=adjusted("none"))
+  summary(this_lme.ht)
+}
+summarize_one_lme_allimages(subject_data, 'craving')
+summarize_one_lme_allimages(subject_data, 'arousal')
+summarize_one_lme_allimages(subject_data, 'valence')
+summarize_one_lme_allimages(subject_data, 'valence_fromneutral')
+
+```
+
+##new LMEs for 7/2019
+
+drug images:
+craving|methToOpioid ~ cat drug + time * session
+
+Need category to have the same values for opioid/meth here--e.g. instrument_hand instead of opioid_instrument_hand
+
+```{r}
+
+                                 
+#meth_instrument opioid_injection_instrument
+#meth_hand opioid_hand
+#meth_injection_hand opioid_injection_hand
+#meth_instrument_hand opioid_instrument_hand
+#meth_face_activities opioid_face_activities
+#meth opioid
+
+subject_data$UnifiedCategory <- NA
+subject_data$UnifiedCategory[subject_data$Category %in% c('meth', 'opioid')] <- 'drug'
+subject_data$UnifiedCategory[subject_data$Category %in% c('meth_instrument', 'opioid_injection_instrument')] <- 'instrument'
+subject_data$UnifiedCategory[subject_data$Category %in% c('meth_hand', 'opioid_hand')] <- 'drug_hand'
+subject_data$UnifiedCategory[subject_data$Category %in% c('meth_injection_hand', 'opioid_injection_hand')] <- 'injection_hand'
+subject_data$UnifiedCategory[subject_data$Category %in% c('meth_instrument_hand', 'opioid_instrument_hand')] <- 'instrument_hand'
+subject_data$UnifiedCategory[subject_data$Category %in% c('meth_face_activities', 'opioid_face_activities')] <- 'face_activities'
+
+
+subject_data$MethToOpioid <- NA
+subject_data$MethToOpioid[subject_data$RelatedCategory == 'Meth'] <- -1
+subject_data$MethToOpioid[subject_data$RelatedCategory == 'Neither'] <- 0
+subject_data$MethToOpioid[subject_data$RelatedCategory == 'Opioid'] <- 1
+subject_data$MethToOpioid[subject_data$RelatedCategory == 'Both'] <- 0
+
+
+summarize_one_lme_drugcats <- function(dset, RatingType){
+  this_lme <- lmer(Value ~  UnifiedCategory * ImageSet + Time * Visit + (1 | id), 
+                data = dset[dset$RatingType == RatingType,])
+  print(paste("LME OF Drug Images FOR:", RatingType))
+  print(plot_model(this_lme, title = paste(RatingType), show.values = TRUE, type = 'std'))
+  print(summary(this_lme))
+  print(anova(this_lme))
+}
+summarize_one_lme_drugcats(subject_data[subject_data$ImageSet %in% c('meth', 'opioid'),], 'craving')
+
+
+
+dset <- subject_data[subject_data$ImageSet %in% c('meth', 'opioid'),]
+this_lme <- lmer(MethToOpioid ~  UnifiedCategory * ImageSet + Time * Visit + (1 | id), 
+              data = dset)
+print(paste("LME OF Drug Images FOR:", 'MethToOpioid'))
+print(plot_model(this_lme, title = paste('MethToOpioid'), show.values = TRUE, type = 'std'))
+print(summary(this_lme))
+print(anova(this_lme))
+
+
+```
+
+##RT to craving ratings
+
+```{r}
+
+summarize_one_lme_time <- function(dset, formula_to_use){
+  this_lme <- lmer(formula_to_use, 
+                data = dset)
+  print(paste("LME OF ALL IMAGES FOR: Time On Page"))
+  print(plot_model(this_lme, title = paste('Time On Page for Craving Ratings'), show.values = TRUE, type = 'std', order.terms = c(3,4,1,2)))
+  print(summary(this_lme))
+  print(anova(this_lme))
+  
+  this_lme.ht <- glht(this_lme, linfct = mcp(ImageSet = "Tukey"))
+  summary(this_lme.ht, test=adjusted("none"))
+  summary(this_lme.ht)
+}
+
+craving_data <- subject_data[subject_data$RatingType == 'craving',]
+
+data_touse <- craving_data[craving_data$millisecondsOnPage < 20000,]
+print(paste0("Fraction Excluded for >20s on page: ", 1 - (nrow(data_touse) / nrow(craving_data))))
+
+summarize_one_lme_time(data_touse, as.formula('millisecondsOnPage / 1000 ~  ImageSet + Age + Sex +(1 | id)'))
+
+summarize_one_lme_time(data_touse, as.formula('millisecondsOnPage / 1000 ~  ImageSet + Age + Sex + Time * Visit + (1 | id)'))
+
+
+```
+
+
+##Total time to complete task
+
+```{r}
+
+total_values <- aggregate(subject_data$millisecondsOnPage, 
+                            by = list(id = subject_data$id, Visit = subject_data$Visit), 
+                            FUN = sum, na.rm = TRUE)
+
+names(total_values) <- c('id', 'Visit', 'TaskCompletionTime')
+#convert to seconds
+total_values$TaskCompletionTime <- total_values$TaskCompletionTime / 1000
+
+print("Total task completion time for each visit:")
+CreateTableOne(vars = 'TaskCompletionTime', data = total_values, strata = 'Visit')
+
+```
+
+
+
+
+
+
+
+
+##Time On Image as a function of craving rating, just among drug images
+
+```{r}
+
+image_total_values <- aggregate(subject_data$millisecondsOnPage, 
+                            by = list(id = subject_data$id, ImageSetFile = subject_data$ImageSetFile), 
+                            FUN = sum, na.rm = TRUE)
+
+names(image_total_values) <- c('id', 'ImageSetFile', 'ImageCompletionTime')
+#convert to seconds
+image_total_values$ImageCompletionTime <- image_total_values$ImageCompletionTime / 1000
+
+subject_data <- merge(subject_data, image_total_values)
+
+
+summarize_one_lme_imagetime <- function(dset, formula_to_use){
+  this_lme <- lmer(formula_to_use, 
+                data = dset)
+  print(paste("LME OF DRUG IMAGES FOR: Time On Image"))
+  print(plot_model(this_lme, title = paste('Time On Image for Craving Ratings'), show.values = TRUE, type = 'std', order.terms = c(3,4,2,1)))
+  print(summary(this_lme))
+  print(anova(this_lme))
+  
+  #this_lme.ht <- glht(this_lme, linfct = mcp(ImageSet = "Tukey"))
+  #summary(this_lme.ht, test=adjusted("none"))
+  #summary(this_lme.ht)
+}
+
+craving_data <- subject_data[subject_data$RatingType == 'craving' & subject_data$ImageSet %in% c('meth', 'opioid'),]
+names(craving_data)[names(craving_data) == 'Value'] <- 'craving'
+data_touse <- craving_data[craving_data$ImageCompletionTime < 100,]
+
+print(paste0("Fraction Excluded for >100s on image: ", 1 - (nrow(data_touse) / nrow(craving_data))))
+
+summarize_one_lme_imagetime(data_touse, as.formula('ImageCompletionTime ~  craving + ImageSet + Time * Visit + (1 | id)'))
+
+summarize_one_lme_imagetime(data_touse, as.formula('ImageCompletionTime ~  craving + Time * Visit + (1 | id)'))
+
+
+summarize_one_lme_imagetime(data_touse, as.formula('ImageCompletionTime ~  craving + (1 | id)'))
+
+```
+
+## RT LMEs with clinical variables
+
+```{r}
+
+
+
+
+this_lme <- lmer(millisecondsOnPage / 1000 ~ Age + Sex + MethOnsetAge + MethMonthsUsed + MethDollars + MethDaysLastMonth + MethDaysAbstinant + Time * Visit +(1 | id), 
+              data = subject_data[subject_data$RatingType == 'craving' & subject_data$ImageSet == 'meth',])
+print(plot_model(this_lme, title = 'meth RT to Craving Ratings', show.values = TRUE, type = 'std', order.terms = c(1,2,8,9,10,3,4,6,5,7)))
+print(summary(this_lme))
+print(anova(this_lme))
+
+this_lme <- lmer(millisecondsOnPage / 1000 ~ Age + Sex + OpioidOrHeroinOnsetAge + OpioidOrHeroinMonthsUsed + OpioidOrHeroinDollars + 
+                   OpioidOrHeroinDaysLastMonth + OpioidOrHeroinDaysAbstinant + Time * Visit + (1 | id), 
+              data = subject_data[subject_data$RatingType == 'craving' & subject_data$ImageSet == 'opioid',])
+print(plot_model(this_lme, title = 'opioid RT to Craving Ratings', show.values = TRUE, type = 'std', order.terms = c(1,2,8, 9, 10, 3,4,6,5,7)))
+print(summary(this_lme))
+print(anova(this_lme))
+
+
+
+this_lme <- lmer( ImageCompletionTime ~ Age + Sex + MethOnsetAge + MethMonthsUsed + MethDollars + MethDaysLastMonth + MethDaysAbstinant + Time * Visit +(1 | id), 
+              data = subject_data[subject_data$RatingType == 'craving' & subject_data$ImageSet == 'meth',])
+print(plot_model(this_lme, title = 'meth Image Completion Time', show.values = TRUE, type = 'std', order.terms = c(1,2,8,9,10,3,4,6,5,7)))
+print(summary(this_lme))
+print(anova(this_lme))
+
+this_lme <- lmer(ImageCompletionTime ~ Age + Sex + OpioidOrHeroinOnsetAge + OpioidOrHeroinMonthsUsed + OpioidOrHeroinDollars + 
+                   OpioidOrHeroinDaysLastMonth + OpioidOrHeroinDaysAbstinant + Time * Visit + (1 | id), 
+              data = subject_data[subject_data$RatingType == 'craving' & subject_data$ImageSet == 'opioid',])
+print(plot_model(this_lme, title = 'opioid Image Completion Time', show.values = TRUE, type = 'std', order.terms = c(1,2,8, 9, 10, 3,4,6,5,7)))
+print(summary(this_lme))
+print(anova(this_lme))
+
+
+```
+
+## Raincloud Plots of RTs after excluding some
+
+```{r}
+
+rc_data1 <- subject_data[subject_data$millisecondsOnPage < 20000 & subject_data$RatingType == 'craving',]
+p4 <- ggplot(rc_data1,aes(x=ImageSetCap,y=millisecondsOnPage / 1000, fill = ImageSetCap, colour = ImageSetCap))+
+  geom_flat_violin(position = position_nudge(x = .25, y = 0),adjust =2, trim =  FALSE)+
+  geom_point(position = position_jitter(width = .15), size = .25)+
+  geom_boxplot(aes(x = as.numeric(ImageSetCap)+0.25, y = millisecondsOnPage / 1000),outlier.shape = NA,
+  alpha = 0.3, width = .1, colour = "BLACK") +
+  ylab('')+xlab('')+coord_flip()+theme_cowplot()+guides(fill = FALSE,
+  colour = FALSE) +
+  scale_colour_brewer(palette = "Dark2")+
+  scale_fill_brewer(palette = "Dark2")+
+  ggtitle("SecondsOnPage: Craving Ratings") #+ scale_y_continuous(breaks = c(1, 3, 5, 7, 9), limits = c(1, 9))
+
+rc_data2 <- subject_data[subject_data$ImageCompletionTime < 100,]
+p5 <- ggplot(rc_data2,aes(x=ImageSetCap,y=ImageCompletionTime, fill = ImageSetCap, colour = ImageSetCap))+
+  geom_flat_violin(position = position_nudge(x = .25, y = 0),adjust =2, trim =  FALSE)+
+  geom_point(position = position_jitter(width = .15), size = .25)+
+  geom_boxplot(aes(x = as.numeric(ImageSetCap)+0.25, y = ImageCompletionTime),outlier.shape = NA,
+  alpha = 0.3, width = .1, colour = "BLACK") +
+  ylab('')+xlab('')+coord_flip()+theme_cowplot()+guides(fill = FALSE,
+  colour = FALSE) +
+  scale_colour_brewer(palette = "Dark2")+
+  scale_fill_brewer(palette = "Dark2")+
+  ggtitle("ImageCompletionTime") #+ scale_y_continuous(breaks = c(1, 3, 5, 7, 9), limits = c(1, 9))
+
+png('RTraincloudsExcluded.png', width = 1400, height = 400)
+print(annotate_figure(ggarrange(p4, p5, ncol = 1, nrow = 2, common.legend = TRUE, legend = 'right'), top = text_grob('RTRainclouds', color = 'red')))
+dev.off()
+
+
+```
+
+
+
+##Make random sets of images
+
+```{r}
+
+#remove group summary lines
+selection_data <- merged_summary_values[!is.na(merged_summary_values$File),]
+
+#remove opioid image 118 because 109 and 118 are the same 
+selection_data <- selection_data[(selection_data$Group != 'opioid Slide118.jpeg'),]
+
+#remove images with text on them
+selection_data <- selection_data[!(selection_data$Group %in%  c('opioid Slide015.jpeg', 'opioid Slide016.jpeg', 'opioid Slide017.jpeg', 
+                                                                'opioid Slide018.jpeg', 'opioid Slide019.jpeg', 'opioid Slide020.jpeg',
+                                                                'control Slide017.jpeg', 'control Slide018.jpeg', 'control Slide019.jpeg', 'control Slide020.jpeg')),]
+
+#remove light bulb images, since they can be associated with drug use
+selection_data <- selection_data[!(selection_data$Group %in%  c('opioid Slide57.jpeg', 'opioid Slide87.jpeg')),]
+
+
+
+
+#line below to select data based on hightst/lowest craving
+#sorted_data <- selection_data[order(selection_data$allsubjects_craving_mean),]
+
+#instead, let's select based on hue and see if that helps balance things--get images closest to 0.2
+try_one_criteria <- function(control_target_hue, control_target_saturation, control_target_value,
+                             meth_target_hue, meth_target_saturation, meth_target_value,
+                             opioid_target_hue, opioid_target_saturation, opioid_target_value){
+  #sorted_data <- selection_data[sample(nrow(selection_data)),]
+  
+  selection_data$selection_cost <- NA
+  selection_data$selection_cost[selection_data$ImageSet == 'control'] <- 
+    (selection_data$hue_mean[selection_data$ImageSet == 'control'] - control_target_hue)^2 + 
+    (selection_data$saturation_mean[selection_data$ImageSet == 'control'] - control_target_saturation)^2 +
+    (selection_data$value_mean[selection_data$ImageSet == 'control'] - control_target_value)^2
+  
+  selection_data$selection_cost[selection_data$ImageSet == 'meth'] <- 
+    (selection_data$hue_mean[selection_data$ImageSet == 'meth'] - meth_target_hue)^2 + 
+    (selection_data$saturation_mean[selection_data$ImageSet == 'meth'] - meth_target_saturation)^2 +
+    (selection_data$value_mean[selection_data$ImageSet == 'meth'] - meth_target_value)^2
+  
+  selection_data$selection_cost[selection_data$ImageSet == 'opioid'] <- 
+    (selection_data$hue_mean[selection_data$ImageSet == 'opioid'] - opioid_target_hue)^2 + 
+    (selection_data$saturation_mean[selection_data$ImageSet == 'opioid'] - opioid_target_saturation)^2 +
+    (selection_data$value_mean[selection_data$ImageSet == 'opioid'] - opioid_target_value)^2
+  
+  
+  (selection_data$hue_mean - 0.3)^2 + (selection_data$saturation_mean - 0.3)^2 + (selection_data$value_mean - 0.3)^2
+  sorted_data <- selection_data[order(selection_data$selection_cost),]
+
+
+  
+  #label categories 1:6, to make indexind into number_selected easier
+  
+  sorted_data$category_number <- NA
+  
+  sorted_data$category_number[sorted_data$Category == 'control_objects'] <- 1
+  sorted_data$category_number[sorted_data$Category == 'control_objects_hand'] <- 2
+  sorted_data$category_number[sorted_data$Category == 'control_tool'] <- 3
+  sorted_data$category_number[sorted_data$Category == 'control_tool_hand_simple'] <- 4
+  sorted_data$category_number[sorted_data$Category == 'control_tool_hand_complex'] <- 5
+  sorted_data$category_number[sorted_data$Category == 'control_tool_face'] <- 6
+  
+  sorted_data$category_number[sorted_data$Category == 'meth'] <- 1 
+  sorted_data$category_number[sorted_data$Category == 'meth_hand'] <- 2
+  sorted_data$category_number[sorted_data$Category == 'meth_instrument'] <- 3
+  sorted_data$category_number[sorted_data$Category == 'meth_instrument_hand'] <- 4
+  sorted_data$category_number[sorted_data$Category == 'meth_injection_hand'] <- 5        
+  sorted_data$category_number[sorted_data$Category == 'meth_face_activities'] <- 6
+  
+  #not using any meth_injection_instrument images
+  sorted_data <- sorted_data[sorted_data$Category != 'meth_injection_instrument',]
+  
+  sorted_data$category_number[sorted_data$Category == 'opioid'] <- 1
+  sorted_data$category_number[sorted_data$Category == 'opioid_hand'] <- 2
+  sorted_data$category_number[sorted_data$Category == 'opioid_injection_instrument'] <- 3
+  sorted_data$category_number[sorted_data$Category == 'opioid_instrument_hand'] <- 4
+  sorted_data$category_number[sorted_data$Category == 'opioid_injection_hand'] <- 5
+  sorted_data$category_number[sorted_data$Category == 'opioid_face_activities'] <- 6
+  
+  #number in each group that have been selected 
+  number_selected <- c(0, 0, 0, 0, 0, 0)
+  
+  #go forward, marking the first 12 in each category of control images for selection
+  #will set to TRUE for images selected to be used
+  #this will be the 12 highest craving drug (opioid and meth separate) and lowest craving neutral images in each category
+  sorted_data$selected <- FALSE
+  for (i in 1:nrow(sorted_data)){
+    #step forwards, taking the least craving-iducing neutral images
+    if (sorted_data$ImageSet[i] != 'control') {
+      next
+    }
+    this_category <- sorted_data$category_number[i]
+    if (number_selected[this_category] > 11){
+      next
+    }
+    number_selected[this_category] <- number_selected[this_category] + 1
+    sorted_data[i, 'selected'] <- TRUE
+  }
+  
+  
+  
+  #number in each group that have been selected 
+  number_selected_meth <- c(0, 0, 0, 0, 0, 0)
+  number_selected_opioid <- c(0, 0, 0, 0, 0, 0)
+  #step through backwards, selecting most craving-inducing meth/opioid images
+  #for (i in nrow(sorted_data):1){
+  for (i in 1:nrow(sorted_data)){  
+    
+    this_category <- sorted_data$category_number[i]
+    this_group <- sorted_data$ImageSet[i]
+    if (this_group == 'meth'){
+      if (number_selected_meth[this_category] > 11){
+        next
+      }
+      number_selected_meth[this_category] <- number_selected_meth[this_category] + 1
+      sorted_data[i, 'selected'] <- TRUE
+    }
+    if (this_group == 'opioid'){
+      if (number_selected_opioid[this_category] > 11){
+        next
+      }
+      number_selected_opioid[this_category] <- number_selected_opioid[this_category] + 1
+      sorted_data[i, 'selected'] <- TRUE
+    }
+  }
+  
+  
+  selected_data <- sorted_data[sorted_data$selected,]
+  
+  
+  set.seed(12345678)
+  selected_data$in_set <- NA
+  #will randomize these
+  in_set <- c(0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2)
+  
+  for (i in 1:6){
+    selected_data[selected_data$category_number == i & selected_data$ImageSet == 'control', 'in_set'] <- in_set[sample(12)]
+    selected_data[selected_data$category_number == i & selected_data$ImageSet == 'meth', 'in_set'] <- in_set[sample(12)]
+    selected_data[selected_data$category_number == i & selected_data$ImageSet == 'opioid', 'in_set'] <- in_set[sample(12)]
+  }
+  
+  library(tableone)
+  
+  allsets_tab <- CreateTableOne(vars = c('allsubjects_arousal_mean', 'allsubjects_craving_mean', 'allsubjects_typicality_mean', 'allsubjects_valence_mean', 
+                                         'hue_mean', 'saturation_mean', 'value_mean'),
+                                strata = c('ImageSet'), data = selected_data)
+  print(allsets_tab)
+  
+  p1 <- as.numeric(substr(print(allsets_tab)[[30]], 2, 6))
+  p2 <- as.numeric(substr(print(allsets_tab)[[31]], 2, 6))
+  p3 <- as.numeric(substr(print(allsets_tab)[[32]], 2, 6))
+  return(selected_data)
+}
+
+selected_data <- try_one_criteria(0.4, 0.6, 0.25,
+                 0.3, 0.1, 0.5,
+                 0.2, 0.2, 0.3)
+
+
+
+control_tab <- CreateTableOne(vars = c('allsubjects_arousal_mean', 'allsubjects_craving_mean', 'allsubjects_typicality_mean', 'allsubjects_valence_mean', 
+                                       'hue_mean', 'saturation_mean', 'value_mean'),
+                      strata = c('in_set'), data = selected_data[selected_data$ImageSet == 'control',])
+control_tab
+meth_tab <- CreateTableOne(vars = c('allsubjects_arousal_mean', 'allsubjects_craving_mean', 'allsubjects_typicality_mean', 'allsubjects_valence_mean', 
+                                    'hue_mean', 'saturation_mean', 'value_mean'),
+                              strata = c('in_set'), data = selected_data[selected_data$ImageSet == 'meth',])
+meth_tab
+opioid_tab <- CreateTableOne(vars = c('allsubjects_arousal_mean', 'allsubjects_craving_mean', 'allsubjects_typicality_mean', 'allsubjects_valence_mean', 
+                                      'hue_mean', 'saturation_mean', 'value_mean'),
+                           strata = c('in_set'), data = selected_data[selected_data$ImageSet == 'opioid',])
+opioid_tab
+
+
+
+set0_tab <- CreateTableOne(vars = c('allsubjects_arousal_mean', 'allsubjects_craving_mean', 'allsubjects_typicality_mean', 'allsubjects_valence_mean', 
+                                       'hue_mean', 'saturation_mean', 'value_mean'),
+                      strata = c('ImageSet'), data = selected_data[selected_data$in_set == 0,])
+print(set0_tab)
+
+set1_tab <- CreateTableOne(vars = c('allsubjects_arousal_mean', 'allsubjects_craving_mean', 'allsubjects_typicality_mean', 'allsubjects_valence_mean', 
+                                       'hue_mean', 'saturation_mean', 'value_mean'),
+                      strata = c('ImageSet'), data = selected_data[selected_data$in_set == 1,])
+print(set1_tab)
+
+set2_tab <- CreateTableOne(vars = c('allsubjects_arousal_mean', 'allsubjects_craving_mean', 'allsubjects_typicality_mean', 'allsubjects_valence_mean', 
+                                       'hue_mean', 'saturation_mean', 'value_mean'),
+                      strata = c('ImageSet'), data = selected_data[selected_data$in_set == 2,])
+print(set2_tab)
+
+
+
+write.csv(selected_data, 'DCR_selected_split-MatchedHSV.csv', row.names=FALSE, quote = FALSE)
+
+
+
+```
+
+
+
+
+##Craving vs RT scatterplot(s)
+
+``` {r}
+
+scatter_data <- subject_data[subject_data$RatingType == c('craving') & (subject_data$millisecondsOnPage < 20000) & subject_data$ImageSet %in% c('meth', 'opioid'), ]
+ggplot(scatter_data, aes(x = Value, y = millisecondsOnPage / 1000, color = ImageSet)) + geom_point() + geom_smooth(method = 'lm') + 
+  xlab('Craving') + ylab('Seconds') + 
+  ggtitle(paste0('Craving vs Craving RT'))
+
+
+
+scatter_data <- subject_data[subject_data$RatingType == c('craving') & (subject_data$ImageCompletionTime < 100) & subject_data$ImageSet %in% c('meth', 'opioid'), ]
+ggplot(scatter_data, aes(x = Value, y = ImageCompletionTime, color = ImageSet)) + geom_point() + geom_smooth(method = 'lm') + 
+  xlab('Craving') + ylab('Seconds') + 
+  ggtitle(paste0('Craving vs Time On Image'))
+
+```
+
+
+
+
+
+
+
