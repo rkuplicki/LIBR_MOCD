@@ -86,8 +86,8 @@ library(ggpubr)
 subject_data$RelatedCategory <- factor(subject_data$RelatedCategory, levels = c('Neither', 'Meth', 'Opioid', 'Both'))
 
 #subject_data$Category[subject_data$Category == 'meth_injection_instrument'] <- 'meth_instrument'
-cols <- c('control' = 'green', 'meth' = 'red', 'opioid' = 'blue', 'Control' = 'green', 'Meth' = 'red', 'Opioid' = 'blue')
-
+#cols <- c('control' = 'green', 'meth' = 'red', 'opioid' = 'blue', 'Control' = 'green', 'Meth' = 'red', 'Opioid' = 'blue')
+cols <- c('control' = '#7CAE00', 'meth' = '#F8766D', 'opioid' = '#00BFC4', 'Control' = '#7CAE00', 'Meth' = '#F8766D', 'Opioid' = '#00BFC4')
 
 for (subject in unique(subject_data$id)){
   data_to_plot <- subject_data[subject_data$id == subject,]
