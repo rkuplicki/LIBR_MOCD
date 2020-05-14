@@ -1,5 +1,7 @@
 
 
+%Summarized Hue/Saturation/Value for each image
+%Matlab's rgb2hsv converts the rgb values to hsv, and then we simply take the mean/sd for each image.
 
 output_file = fopen('DCR_hsv_values.csv', 'w');
 
