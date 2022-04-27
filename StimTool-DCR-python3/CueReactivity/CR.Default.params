@@ -1,0 +1,3 @@
+run P
+practice False
+instruction_schedule MCR_instruct_scheduleP_R.csv

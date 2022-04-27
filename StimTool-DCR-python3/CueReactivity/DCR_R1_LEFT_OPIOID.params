@@ -1,0 +1,12 @@
+run_id _OCR-R1-_BEH
+question_image media\MethOpioidDatabase\urge_question_drugs.PNG
+response_image_1 media\MethOpioidDatabase\urge_response_drugs_1.PNG
+response_image_2 media\MethOpioidDatabase\urge_response_drugs_2.PNG
+response_image_3 media\MethOpioidDatabase\urge_response_drugs_3.PNG
+response_image_4 media\MethOpioidDatabase\urge_response_drugs_4.PNG
+select_1 'down'
+select_2 'up'
+select_3 'left'
+select_4 'right'
+instruction_schedule DCR_instruct_schedule_Scan_LEFT-OPIOID.csv
+practice False
